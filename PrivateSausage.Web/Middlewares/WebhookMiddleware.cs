@@ -80,10 +80,9 @@ namespace PrivateSausage.Web.Middlewares
 
         private string FormWebhookUri(HttpContext context)
         {
-            var protocol = context.Request.IsHttps ? "https://" : "http://";
             var host = new Uri(context.Request.Host.ToString(), UriKind.Absolute);
             var api = new Uri(_options.Webhook.ApiUrl, UriKind.Relative);
-            var uri = protocol + host + "/" + api;
+            var uri = "https://" + host + "/" + api;
 
             return uri;
         }
