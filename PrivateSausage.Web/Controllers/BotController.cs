@@ -21,22 +21,19 @@ namespace PrivateSausage.Web.Controllers
         }
 
         [HttpPost("updates")]
-        public async Task<ActionResult<string>> Post([FromBody] IEnumerable<Update> updates)
+        public async Task<ActionResult<string>> Post([FromBody] Update update)
         {
             var result = string.Empty;
 
-            foreach (var update in updates)
+            var commandEntity = update.Message.Entities?.FirstOrDefault(entity => entity.Type == MessageEntityType.BotCommand);
+
+            if (commandEntity != null)
             {
-                var commandEntity = update.Message.Entities?.FirstOrDefault(entity => entity.Type == MessageEntityType.BotCommand);
+                var commandText = update.Message.Text.Substring(commandEntity.Offset, commandEntity.Length);
 
-                if (commandEntity != null)
+                if (commandText.Equals("/hi"))
                 {
-                    var commandText = update.Message.Text.Substring(commandEntity.Offset, commandEntity.Length);
-
-                    if (commandText.Equals("/hi"))
-                    {
-                        await _botClient.SendTextMessageAsync(update.Message.Chat.Id, "Sir! Yes, sir!");
-                    }
+                    await _botClient.SendTextMessageAsync(update.Message.Chat.Id, "Sir! Yes, sir!");
                 }
             }
 
