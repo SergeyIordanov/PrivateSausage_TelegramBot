@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using PrivateSausage.Web.Configuration;
+using PrivateSausage.Web.Filters;
+using PrivateSausage.Web.Middlewares;
+using Telegram.Bot;
 
 namespace PrivateSausage.Web
 {
     public class Startup
     {
+        private const string BotConfigurationSectionName = "Bot";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,7 +24,18 @@ namespace PrivateSausage.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            var botOptions = new BotOptions();
+            Configuration.Bind(BotConfigurationSectionName, botOptions);
+
+            services.Configure<BotOptions>(Configuration.GetSection(BotConfigurationSectionName));
+
+            services.AddMvc(options =>
+                {
+                    options.Filters.Add<BotTokenValidationFilterAttribute>();
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(botOptions.Token));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +52,7 @@ namespace PrivateSausage.Web
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseWebhook();
         }
     }
 }
