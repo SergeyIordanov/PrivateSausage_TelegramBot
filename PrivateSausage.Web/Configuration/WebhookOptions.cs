@@ -5,7 +5,7 @@ namespace PrivateSausage.Web.Configuration
 {
     public class WebhookOptions
     {
-        public string ApiUrl { get; set; }
+        public string Url { get; set; }
 
         public int MaxConnections { get; set; }
 

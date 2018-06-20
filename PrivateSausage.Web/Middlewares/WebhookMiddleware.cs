@@ -35,34 +35,33 @@ namespace PrivateSausage.Web.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            var uri = FormWebhookUri(context);
             var webHookInfo = await _botClient.GetWebhookInfoAsync();
 
             var webhookExists = !string.IsNullOrEmpty(webHookInfo.Url);
 
             if (webhookExists)
             {
-                if (!ValidateWebhookUri(webHookInfo, uri))
+                if (!ValidateWebhookUri(webHookInfo))
                 {
                     await _botClient.DeleteWebhookAsync();
 
-                    await CreateWebhookAsync(uri, context);
+                    await CreateWebhookAsync(context);
                 }
             }
             else
             {
-                await CreateWebhookAsync(uri, context);
+                await CreateWebhookAsync(context);
             }
 
             await _next(context);
         }
 
-        private async Task CreateWebhookAsync(string uri, HttpContext context)
+        private async Task CreateWebhookAsync(HttpContext context)
         {
             try
             {
                 await _botClient.SetWebhookAsync(
-                    uri.Replace(TokenRouteVariable, _options.Token),
+                    _options.Webhook.Url.Replace(TokenRouteVariable, _options.Token),
                     null,
                     _options.Webhook.MaxConnections,
                     _options.Webhook.AllowedUpdates);
@@ -73,18 +72,9 @@ namespace PrivateSausage.Web.Middlewares
             }
         }
 
-        private bool ValidateWebhookUri(WebhookInfo webHookInfo, string requiredUri)
+        private bool ValidateWebhookUri(WebhookInfo webHookInfo)
         {
-            return string.Equals(webHookInfo.Url, requiredUri);
-        }
-
-        private string FormWebhookUri(HttpContext context)
-        {
-            var host = new Uri(context.Request.Host.ToString(), UriKind.Absolute);
-            var api = new Uri(_options.Webhook.ApiUrl, UriKind.Relative);
-            var uri = "https://" + host + "/" + api;
-
-            return uri;
+            return string.Equals(webHookInfo.Url, _options.Webhook.Url);
         }
 
         private async Task CreateResponse(HttpContext context, Exception exception, int statusCode)
