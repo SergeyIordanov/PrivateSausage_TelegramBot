@@ -18,6 +18,11 @@ namespace PrivateSausage.Web.Handlers.CommandHendlers
         {
             new InlineKeyboardButton
             {
+                Text = "Report!",
+                CallbackData = CallbackType.Report
+            },
+            new InlineKeyboardButton
+            {
                 Text = "At ease, private!",
                 CallbackData = CallbackType.Cancel
             }

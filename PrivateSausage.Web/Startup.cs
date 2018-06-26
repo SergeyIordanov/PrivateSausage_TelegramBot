@@ -63,7 +63,9 @@ namespace PrivateSausage.Web
         private static void RegisterHandlers(IServiceCollection services)
         {
             services.AddSingleton<ICommandHandler, HelloCommandHandler>();
+
             services.AddSingleton<ICallbackHandler, CancelCallbackHandler>();
+            services.AddSingleton<ICallbackHandler, ReportCallbackHandler>();
         }
     }
 }
