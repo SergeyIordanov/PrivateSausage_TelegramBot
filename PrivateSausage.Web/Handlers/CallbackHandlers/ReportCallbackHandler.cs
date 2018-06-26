@@ -16,7 +16,7 @@ namespace PrivateSausage.Web.Handlers.CallbackHandlers
             _botClient = botClient;
         }
 
-        public string CallbackType => Globals.CallbackType.Cancel;
+        public string CallbackType => Globals.CallbackType.Report;
 
         public async Task HandleAsync(Update update)
         {
