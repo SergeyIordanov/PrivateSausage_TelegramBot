@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using PrivateSausage.Web.Globals;
 using PrivateSausage.Web.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -16,7 +14,7 @@ namespace PrivateSausage.Web.Handlers.CallbackHandlers
             _botClient = botClient;
         }
 
-        public string CallbackType => Callback.Cancel;
+        public string CallbackType => Globals.CallbackType.Cancel;
 
         public Task HandleAsync(Update update)
         {

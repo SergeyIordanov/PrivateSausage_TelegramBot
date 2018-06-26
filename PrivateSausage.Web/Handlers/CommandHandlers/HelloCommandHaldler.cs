@@ -19,7 +19,7 @@ namespace PrivateSausage.Web.Handlers.CommandHendlers
             new InlineKeyboardButton
             {
                 Text = "At ease, private!",
-                CallbackData = Callback.Cancel
+                CallbackData = CallbackType.Cancel
             }
         };
 
@@ -28,14 +28,14 @@ namespace PrivateSausage.Web.Handlers.CommandHendlers
             _botClient = botClient;
         }
 
-        public string Command => Globals.Command.Hi;
+        public string Command => CommandType.Hi;
 
-        public async Task HandleAsync(Update update)
+        public Task HandleAsync(Update update)
         {
             var inlineKeyboardMarkup = new InlineKeyboardMarkup(
                 new List<IEnumerable<InlineKeyboardButton>> { _buttons });
 
-            await _botClient.SendTextMessageAsync(update.Message.Chat.Id, ReplyText, replyMarkup: inlineKeyboardMarkup);
+            return _botClient.SendTextMessageAsync(update.Message.Chat.Id, ReplyText, replyMarkup: inlineKeyboardMarkup);
         }
     }
 }

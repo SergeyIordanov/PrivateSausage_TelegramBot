@@ -1,6 +1,6 @@
 namespace PrivateSausage.Web.Globals
 {
-    public static class Command
+    public static class CommandType
     {
         public static string Hi = "/hi";
     }
