@@ -20,8 +20,9 @@ namespace PrivateSausage.Web.Handlers.CallbackHandlers
 
         public async Task HandleAsync(Update update)
         {
-            var messageBuilder = new StringBuilder("Report");
-            messageBuilder.AppendLine(DateTime.Now.ToString("MM/dd/yyyy hh:mm AA"));
+            var messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine("Report");
+            messageBuilder.AppendLine(DateTime.Now.ToString("MM/dd/yyyy hh:mm TT"));
             messageBuilder.AppendLine("-------------------");
             messageBuilder.AppendLine("Nothing to report.");
 
