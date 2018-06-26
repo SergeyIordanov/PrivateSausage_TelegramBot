@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Telegram.Bot;
+using PrivateSausage.Web.Extensions;
+using PrivateSausage.Web.Interfaces;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -13,32 +13,45 @@ namespace PrivateSausage.Web.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly ITelegramBotClient _botClient;
+        private readonly IEnumerable<ICommandHandler> _commandHandlers;
+        private readonly IEnumerable<ICallbackHandler> _callbackHandlers;
 
-        public BotController(ITelegramBotClient botClient)
+        public BotController(
+            IEnumerable<ICommandHandler> commandHandlers,
+            IEnumerable<ICallbackHandler> callbackHandlers)
         {
-            _botClient = botClient;
+            _commandHandlers = commandHandlers;
+            _callbackHandlers = callbackHandlers;
         }
 
         [HttpPost("updates")]
-        public async Task<ActionResult<string>> Post([FromBody] Update update)
+        public async Task<ActionResult> Post([FromBody] Update update)
         {
-            var result = string.Empty;
+            ProcessCommands(update);
+            ProcessCallback(update);
 
-            var commandEntity = update.Message.Entities?.FirstOrDefault(entity => entity.Type == MessageEntityType.BotCommand);
+            return Ok();
+        }
 
-            if (commandEntity != null)
+        private void ProcessCallback(Update update)
+        {
+            if (update.Type == UpdateType.CallbackQuery)
             {
-                var commandText = update.Message.Text.Substring(commandEntity.Offset, commandEntity.Length);
-
-                if (commandText.Equals("/hi"))
-                {
-                    await _botClient.SendTextMessageAsync(update.Message.Chat.Id, "Sir! Yes, sir!");
-                }
+                var callbackHandler = _callbackHandlers
+                    .FirstOrDefault(handler => handler.CallbackType.Equals(update.CallbackQuery.Data));
+                callbackHandler?.HandleAsync(update);
             }
+        }
 
+        private void ProcessCommands(Update update)
+        {
+            var commands = update.GetCommands(true);
 
-            return result;
+            foreach (var command in commands)
+            {
+                var commandHandler = _commandHandlers.FirstOrDefault(handler => handler.Command.Equals(command));
+                commandHandler?.HandleAsync(update);
+            }
         }
     }
 }

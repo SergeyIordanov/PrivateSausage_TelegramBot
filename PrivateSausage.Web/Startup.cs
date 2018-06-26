@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrivateSausage.Web.Configuration;
 using PrivateSausage.Web.Filters;
+using PrivateSausage.Web.Handlers.CallbackHandlers;
+using PrivateSausage.Web.Handlers.CommandHendlers;
+using PrivateSausage.Web.Interfaces;
 using PrivateSausage.Web.Middlewares;
 using Telegram.Bot;
 
@@ -36,6 +39,8 @@ namespace PrivateSausage.Web
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(botOptions.Token));
+
+            RegisterHandlers(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +58,12 @@ namespace PrivateSausage.Web
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseWebhook();
+        }
+
+        private static void RegisterHandlers(IServiceCollection services)
+        {
+            services.AddSingleton<ICommandHandler, HelloCommandHandler>();
+            services.AddSingleton<ICallbackHandler, CancelCallbackHandler>();
         }
     }
 }
