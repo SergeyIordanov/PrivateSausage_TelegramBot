@@ -31,8 +31,6 @@ namespace PrivateSausage.Web
             Configuration.Bind(BotConfigurationSectionName, botOptions);
 
             services.Configure<BotOptions>(Configuration.GetSection(BotConfigurationSectionName));
-
-            services.AddCors();
             
             services.AddMvc(options =>
                 {
@@ -57,7 +55,6 @@ namespace PrivateSausage.Web
                 app.UseHsts();
             }
 
-            app.UseCors(builder => builder.WithOrigins("https://example.com"));
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseWebhook();
