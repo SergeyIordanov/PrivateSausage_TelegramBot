@@ -32,6 +32,8 @@ namespace PrivateSausage.Web
 
             services.Configure<BotOptions>(Configuration.GetSection(BotConfigurationSectionName));
 
+            services.AddCors();
+            
             services.AddMvc(options =>
                 {
                     options.Filters.Add<BotTokenValidationFilterAttribute>();
@@ -55,6 +57,7 @@ namespace PrivateSausage.Web
                 app.UseHsts();
             }
 
+            app.UseCors(builder => builder.WithOrigins("https://example.com"));
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseWebhook();
