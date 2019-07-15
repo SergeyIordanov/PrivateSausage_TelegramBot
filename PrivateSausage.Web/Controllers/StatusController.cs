@@ -5,7 +5,7 @@ namespace PrivateSausage.Web.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class BotController : ControllerBase
+    public class StatusController : ControllerBase
     {
         [HttpGet("status")]
         public async Task<ActionResult> Get()
